@@ -1,0 +1,143 @@
+﻿using System.ComponentModel;
+using System.Text;
+
+string[] lines =
+{
+    "Иванов Иван;5;4;5;5;4",
+    "Петрова Анна;5;5;5;5;5",
+    "Сидоров Алексей;3;3;4;3",
+    "Кузнецова Мария;4;4;5;4;4",
+    "Смирнов Дмитрий;2;3;2;4",
+    "Васильева Ольга;5;4;5;4;5",
+    "Попов Артём;3;4;3;4;3",
+    "Новикова София;4;5;4;5;4"
+};
+while (true)
+{
+    Console.WriteLine("1. Добавить");
+    Console.WriteLine("2. Редактировать");
+    Console.WriteLine("3. Поиск");
+    //Console.WriteLine("4. Список");
+    Console.WriteLine("5. Выход");
+
+    string choice = Console.ReadLine();
+
+    switch (choice)
+    {
+        case "1":
+            Adds(lines);
+            break;
+        case "2":
+            Redo(lines); 
+            break;
+        case "3":
+            Search(lines);
+            break;
+        //case "4":
+            //ListS(lines); 
+            //break;
+        case "5":
+            return;
+
+    }
+
+}
+static void Adds(string[] lines)
+{
+    Console.WriteLine("ФИО:");
+    string fio = Console.ReadLine();
+    
+    for (int i = 0; i < lines.Length; i++)
+    {
+        string[] part = lines[i].Split(";");
+        if (part[0].Contains(fio))
+        {
+            Console.WriteLine("Введите количество оценок:");
+            int kolvo = int.Parse(Console.ReadLine());
+            StringBuilder sb = new StringBuilder(lines[i]);
+            for (int j = 1; j <= kolvo; j++)
+            {
+                Console.WriteLine("Введите оценку:");
+                string grade = Console.ReadLine();
+                sb.Append(";").Append(grade);
+            }
+            lines[i] = sb.ToString();
+            return;
+        }
+    }
+        
+}
+
+static void Redo(string[] lines)
+{
+    Console.WriteLine("ФИО");
+    string fio = Console.ReadLine();
+   
+    for (int i = 0; i < lines.Length; i++)
+    {
+        string[] part = lines[i].Split(";");
+        if (part[0].Contains(fio))
+        {
+            Console.WriteLine(lines[i]);
+            Console.WriteLine("Какую оценку заменить?");
+            int num = int.Parse(Console.ReadLine());
+            Console.WriteLine("Новая оценка:");
+            part[num] = Console.ReadLine();
+            lines[i]= string.Join(";", part);
+            return;
+        }
+    }
+}
+
+static void Search(string[] lines)
+{
+    Console.WriteLine("ФИО");
+    string fio = Console.ReadLine();
+
+    for (int i = 0; i < lines.Length; i++)
+    {
+        string[] part = lines[i].Split(";");
+        if (part[0].Contains(fio))
+        {
+            Console.WriteLine(lines[i]);
+            return;
+        }
+    }
+}
+/*
+static double Sred(string line)
+{
+    string[] part = lines[i].Split(";");
+    double sum = 0;
+    for (int i = 1; i < part.Length; i++)
+    {
+        sum += int.Parse(part[i]);
+    }
+    return sum/(part.Length-1);
+}
+
+static void ListS(string[] lines)
+{
+    Console.WriteLine("1. Все:");
+    Console.WriteLine("2. Отличники:");
+    Console.WriteLine("3. Хорошисты:");
+    Console.WriteLine("4. Троечники");
+    Console.WriteLine("5. Двоечники");
+
+    string ch = Console.ReadLine();
+    string[] sortedline = (string[])lines;
+
+    for (int i = 0;i < sortedline.Length-1;i++)
+    {
+        for (int j = 0; j < sortedline.Length - i - 1; j++)
+        {
+            if (Sred(sortedline[j]) < Sred(sortedline[j + 1]))
+            {
+                string vrem = sortedline[j];
+                sortedline[j] = sortedline[j + 1];
+                sortedline[j + 1]=vrem;
+            }
+        }
+    }
+}
+*/
