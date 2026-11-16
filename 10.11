@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+
 using System.Text;
 
 string[] lines =
@@ -12,12 +12,13 @@ string[] lines =
     "Попов Артём;3;4;3;4;3",
     "Новикова София;4;5;4;5;4"
 };
+
 while (true)
 {
     Console.WriteLine("1. Добавить");
     Console.WriteLine("2. Редактировать");
     Console.WriteLine("3. Поиск");
-    //Console.WriteLine("4. Список");
+    Console.WriteLine("4. Список");
     Console.WriteLine("5. Выход");
 
     string choice = Console.ReadLine();
@@ -25,68 +26,76 @@ while (true)
     switch (choice)
     {
         case "1":
-            Adds(lines);
+            lines = Adds(lines);
             break;
         case "2":
-            Redo(lines); 
+            Redo(lines);
             break;
         case "3":
             Search(lines);
             break;
-        //case "4":
-            //ListS(lines); 
-            //break;
+        case "4":
+            ListS(lines);
+            break;
         case "5":
             return;
-
     }
-
 }
-static void Adds(string[] lines)
+
+static string[] Adds(string[] lines)
 {
-    Console.WriteLine("ФИО:");
-    string fio = Console.ReadLine();
-    
-    for (int i = 0; i < lines.Length; i++)
+    Console.Write("\nВведите фамилию и имя: ");
+    string fi = Console.ReadLine();
+
+    StringBuilder sb = new StringBuilder(fi);
+
+    Console.WriteLine("Введите количество оценок:");
+    int kolvo = int.Parse(Console.ReadLine());
+
+    for (int j = 1; j <= kolvo; j++)
     {
-        string[] part = lines[i].Split(";");
-        if (part[0].Contains(fio))
-        {
-            Console.WriteLine("Введите количество оценок:");
-            int kolvo = int.Parse(Console.ReadLine());
-            StringBuilder sb = new StringBuilder(lines[i]);
-            for (int j = 1; j <= kolvo; j++)
-            {
-                Console.WriteLine("Введите оценку:");
-                string grade = Console.ReadLine();
-                sb.Append(";").Append(grade);
-            }
-            lines[i] = sb.ToString();
-            return;
-        }
+        Console.WriteLine("Введите оценку:");
+        string grade = Console.ReadLine();
+
+        sb.Append(";").Append(grade);
     }
-        
+
+    Array.Resize(ref lines, lines.Length + 1);
+    lines[lines.Length - 1] = sb.ToString();
+
+    return lines;
 }
 
 static void Redo(string[] lines)
 {
     Console.WriteLine("ФИО");
     string fio = Console.ReadLine();
-   
+
     for (int i = 0; i < lines.Length; i++)
     {
         string[] part = lines[i].Split(";");
+
         if (part[0].Contains(fio))
         {
             Console.WriteLine(lines[i]);
             Console.WriteLine("Какую оценку заменить?");
             int num = int.Parse(Console.ReadLine());
+
+            if (num < 1 || num >= part.Length)
+            {
+                Console.WriteLine("Неверный номер оценки");
+                return;
+            }
+
             Console.WriteLine("Новая оценка:");
             part[num] = Console.ReadLine();
-            lines[i]= string.Join(";", part);
+
+            lines[i] = string.Join(";", part);
             return;
         }
     }
+
+    Console.WriteLine("Ученик не найден");
 }
 
 static void Search(string[] lines)
@@ -97,45 +106,35 @@ static void Search(string[] lines)
     for (int i = 0; i < lines.Length; i++)
     {
         string[] part = lines[i].Split(";");
+
         if (part[0].Contains(fio))
         {
             Console.WriteLine(lines[i]);
             return;
         }
     }
+
+    Console.WriteLine("Ученик не найден");
 }
-/*
+
 static double Sred(string line)
 {
-    string[] part = lines[i].Split(";");
+    string[] part = line.Split(";");
     double sum = 0;
+
     for (int i = 1; i < part.Length; i++)
     {
         sum += int.Parse(part[i]);
     }
-    return sum/(part.Length-1);
-}
 
-static string Category(double Sred)
-{
-    if (Sred>=4.5) return "Отличник";
-    if (Sred>=3.5) return "Хорошист";
-    if (Sred>=2.5) return "Троечник";
-    if (Sred>=1.5) return "Двоечник";
+    return sum / (part.Length - 1);
 }
 
 static void ListS(string[] lines)
 {
-    Console.WriteLine("1. Все:");
-    Console.WriteLine("2. Отличники:");
-    Console.WriteLine("3. Хорошисты:");
-    Console.WriteLine("4. Троечники");
-    Console.WriteLine("5. Двоечники");
+    string[] sortedline = (string[])lines.Clone();
 
-    string ch = Console.ReadLine();
-    string[] sortedline = (string[])lines;
-
-    for (int i = 0;i < sortedline.Length-1;i++)
+    for (int i = 0; i < sortedline.Length - 1; i++)
     {
         for (int j = 0; j < sortedline.Length - i - 1; j++)
         {
@@ -143,9 +142,57 @@ static void ListS(string[] lines)
             {
                 string vrem = sortedline[j];
                 sortedline[j] = sortedline[j + 1];
-                sortedline[j + 1]=vrem;
+                sortedline[j + 1] = vrem;
             }
         }
     }
+
+    Console.WriteLine("Введите категорию учеников: все, отличник, хорошист, троечник, двоечник: ");
+    string criterio = Console.ReadLine().ToLower();
+
+    Console.WriteLine("\n" + new string('=', 100));
+    Console.WriteLine("Студент                        | Оценки                   | Среднее | Категория");
+    Console.WriteLine(new string('-', 100));
+
+    foreach (string ll in sortedline)
+    {
+        string[] chisl = ll.Split(';');
+
+        string name = chisl[0];
+        string ozenki = "";
+
+        for (int i = 1; i < chisl.Length; i++)
+        {
+            ozenki += chisl[i] + " ";
+        }
+
+        double sred = Math.Round(Sred(ll), 2);
+
+        string category;
+
+        if (sred < 2.5)
+        {
+            category = "двоечник";
+        }
+        else if (sred < 3.6)
+        {
+            category = "троечник";
+        }
+        else if (sred < 4.6)
+        {
+            category = "хорошист";
+        }
+        else
+        {
+            category = "отличник";
+        }
+
+        if (criterio == "все" || criterio == category)
+        {
+            Console.WriteLine($"{name,-30} | {ozenki,-25} | {sred,7:F3} | {category}");
+        }
+    }
+
+    Console.WriteLine(new string('=', 100));
 }
-*/
+
